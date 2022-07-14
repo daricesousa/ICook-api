@@ -9,8 +9,9 @@ const router = Router();
 const controllerUser = new ControllerUser();
 const examples = new Examples();
 
-router.post('/aaa', controllerUser.sign);
-router.post('/users', controllerUser.create);
+router.post('/sign', controllerUser.sign);
+router.post('/register', controllerUser.create);
+router.get('/users', controllerUser.listUsers);
 
 
 

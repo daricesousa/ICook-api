@@ -7,7 +7,27 @@ import jwt from 'jsonwebtoken';
 import { Params } from "../utils/params";
 
 class ControllerUser {
-
+  async listUsers (req: Request, res: Response) {
+    try{
+      const repository = getRepository(User);
+      const users = await repository.find();
+      res.json({
+        message: 'usuários retornados com sucesso',
+        data: {
+          users: users.map((user) => {
+            return {
+              ...user,
+              password: undefined,
+            }
+          }),
+        }
+      })
+    }catch(error) {
+      console.log(error);
+      return res.status(500).json({message: "Erro no servidor"})
+      
+    }
+  }
   async create(req: Request, res: Response) {
     try {
       const fields = Params.required(req.body, ['name', 'email', 'password']);
@@ -27,7 +47,6 @@ class ControllerUser {
         name: name,
         email: email,
         password: hashP,
-        picture: null,
       });
       await userRepository.save(user);
       return res.json({
@@ -87,7 +106,6 @@ class ControllerUser {
         return res.json({
           message: "login efetuado",
           user: userAlreadyExists.name,
-          picture: userAlreadyExists.picture,
           token,
         });
       } else {
