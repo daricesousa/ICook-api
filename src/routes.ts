@@ -3,15 +3,19 @@ import { Router } from 'express'
 import { ControllerUser } from './controllers/controllerUser';
 import { Examples } from './controllers/controllerExamples';
 import { patterResponse401 } from './utils/response401';
+import { ControllerGroupIngredients } from './controllers/controllerGroupIngredients';
 
 const router = Router();
 
 const controllerUser = new ControllerUser();
+const controllerGroupIngredients = new ControllerGroupIngredients();
 const examples = new Examples();
 
 router.post('/sign', controllerUser.sign);
 router.post('/register', controllerUser.create);
 router.get('/users', controllerUser.listUsers);
+router.post('/new-group', controllerGroupIngredients.create);
+router.get('/groups', controllerGroupIngredients.listGroups);
 
 
 
