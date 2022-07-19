@@ -17,6 +17,9 @@ class User {
   @Column()
   password: string;
 
+  @Column({default: "user"})
+  rule: string;
+
   @Column({nullable: true})
   valid_sign: Date;
 

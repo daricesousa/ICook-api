@@ -1,21 +1,33 @@
 import { auth } from './utils/auth';
-import { Router } from 'express'
+import { Router, Response } from 'express'
 import { ControllerUser } from './controllers/controllerUser';
 import { Examples } from './controllers/controllerExamples';
 import { patterResponse401 } from './utils/response401';
 import { ControllerGroupIngredients } from './controllers/controllerGroupIngredients';
+import { ControllerIngredient } from './controllers/controllerIngredient';
 
 const router = Router();
 
 const controllerUser = new ControllerUser();
 const controllerGroupIngredients = new ControllerGroupIngredients();
 const examples = new Examples();
+const controllerIngredient = new ControllerIngredient();
+
+
+router.get('/', (req, res) => {
+    return res.json({ok: 'Server is running'});
+});
 
 router.post('/sign', controllerUser.sign);
 router.post('/register', controllerUser.create);
 router.get('/users', controllerUser.listUsers);
+
 router.post('/new-group', controllerGroupIngredients.create);
 router.get('/groups', controllerGroupIngredients.listGroups);
+// router.delete('/delete-all-users', controllerUser.deleteAllUsers);
+
+router.post('/new-ingredient', controllerIngredient.create);
+router.get('/ingredients', controllerIngredient.listIngredients);
 
 
 

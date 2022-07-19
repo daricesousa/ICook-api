@@ -1,10 +1,10 @@
 const typeormConfig = {
-  "ssl": true,
-  "extra": {
-    "ssl":{
-      "rejectUnauthorized": false
-    }
-  },
+  "ssl": false,
+  // "extra": {
+  //   "ssl":{
+  //     "rejectUnauthorized": false
+  //   }
+  // },
   "type": "postgres",
   "database": process.env.DATABASE,
   "username": process.env.DATABASE_USERNAME,

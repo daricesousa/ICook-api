@@ -9,11 +9,12 @@ class ControllerGroupIngredients {
       const fields = Params.required(req.body, ['name']);
       if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
 
-      const { name } = req.body;
+      const { name, id} = req.body;
       const userRepository = getRepository(GroupIngredients);
 
       const user = userRepository.create({
         name: name,
+        id: id,
       });
 
       await userRepository.save(user);
@@ -39,7 +40,6 @@ class ControllerGroupIngredients {
             return {
               ...group,
               created_at: undefined
-             
             }
           }),
         }
