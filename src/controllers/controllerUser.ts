@@ -28,8 +28,8 @@ class ControllerUser {
       
     }
   }
+  
   // userRepository = getRepository(User);
-
   // async deleteAllUsers(req: Request, res: Response) {
   //   await this.userRepository.delete({});
   //   res.json({

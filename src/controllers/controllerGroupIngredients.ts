@@ -10,14 +10,14 @@ class ControllerGroupIngredients {
       if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
 
       const { name, id} = req.body;
-      const userRepository = getRepository(GroupIngredients);
+      const repository = getRepository(GroupIngredients);
 
-      const user = userRepository.create({
+      const group = repository.create({
         name: name,
         id: id,
       });
 
-      await userRepository.save(user);
+      await repository.save(group);
       return res.json({
         message: "grupo criado",
       });
