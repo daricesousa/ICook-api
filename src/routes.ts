@@ -29,6 +29,7 @@ router.get('/groups', controllerGroupIngredients.listGroups);
 router.post('/new-ingredient', controllerIngredient.create);
 router.get('/ingredients', controllerIngredient.listIngredients);
 router.delete('/delete-ingredient/:id', controllerIngredient.delete);
+router.put('/associate', controllerIngredient.updateAssociate)
 
 
 

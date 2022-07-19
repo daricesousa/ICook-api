@@ -75,7 +75,34 @@ class ControllerIngredient {
     }
   }
 
-  
+  async updateAssociate(req: Request, res: Response) {
+    try {
+      const fields = Params.required(req.body, ['id', 'associates']);
+      if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
+
+      const { id, associates } = req.body;
+      const repository = getRepository(Ingredient);
+      let ingredient = await repository.findOne({id});
+      
+      if (!ingredient) {
+        return res.status(403).json({
+          message: "Ingrediente não cadastrado",
+        });
+      }
+      ingredient.associates = JSON.stringify(associates)
+      await repository.update({id: id}, ingredient)
+      return res.json({
+        "message": "lista de associação alterada"
+      })
+      
+    }
+    catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "erro interno",
+      });
+    }
+  }
 
 }
 
