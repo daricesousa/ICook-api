@@ -41,7 +41,7 @@ class ControllerUser {
       const fields = Params.required(req.body, ['name', 'email', 'password']);
       if (fields) return res.status(433).json({message: "Campos inválidos", campos: fields})
       
-      const { name, email, password, rule} = req.body;      
+      const { name, email, password} = req.body;      
       const userRepository = getRepository(User);
 
       const userFind = await userRepository.findOne({ email });
@@ -55,7 +55,6 @@ class ControllerUser {
         name: name,
         email: email,
         password: hashP,
-        rule: rule,
       });
       await userRepository.save(user);
       return res.json({

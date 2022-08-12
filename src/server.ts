@@ -16,4 +16,4 @@ app.use(express.json({limit: '5mb'}));
 app.use(router);
 
 const port = process.env.PORT|| 3000;
-app.listen(port, () => console.info('server is running'));
+app.listen(port, () => console.info(`server is running - port:${port}`));

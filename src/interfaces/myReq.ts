@@ -1,11 +1,10 @@
 import { Request } from 'express';
+import { User } from '../models/modelUser';
 
-interface UserReq{
-  id: number;
-}
+
 
 interface MyReq extends Request {
-  user: UserReq;
+  user: User;
 }
 
 export { MyReq }

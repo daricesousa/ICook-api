@@ -3,6 +3,7 @@ import { User } from "../models/modelUser";
 import { Request, Response } from "express";
 import { Params } from "../utils/params"
 import { MyReq } from "../interfaces/myReq";
+import { Ingredient } from "../models/ingredient";
 
 class Examples {
   async teste(req: Request, res: Response) {
@@ -24,11 +25,11 @@ class Examples {
   }
 
   async testeAuth(req: MyReq, res: Response) {
-    const usersRepository = getRepository(User);
+    const repository = getRepository(Ingredient);
     // const receitas = await usersRepository.findAndCount({name: "weliton Sousa"});
-    const receitas = await usersRepository.find();
-    const filter = receitas.filter((receita) => receita.name === "weliton Sousa");
-    return res.json({message: 'testado', receitas: filter})
+    // const ingredients = await repository.find({userId: req.user.id});
+    // const filter = user.filter((receita) => receita.name === "weliton Sousa");
+    return res.json({message: 'testado', user: req.user})
   }
 }
 

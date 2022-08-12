@@ -2,7 +2,7 @@ import { auth } from './utils/auth';
 import { Router, Response } from 'express'
 import { ControllerUser } from './controllers/controllerUser';
 import { Examples } from './controllers/controllerExamples';
-import { patterResponse401 } from './utils/response401';
+import { userResponse401, adminResponse401 } from './utils/response401';
 import { ControllerGroupIngredients } from './controllers/controllerGroupIngredients';
 import { ControllerIngredient } from './controllers/controllerIngredient';
 
@@ -20,16 +20,16 @@ router.get('/', (req, res) => {
 
 router.post('/sign', controllerUser.sign);
 router.post('/register', controllerUser.create);
-router.get('/users', controllerUser.listUsers);
+router.get('/users',adminResponse401 , controllerUser.listUsers);
 
-router.post('/new-group', controllerGroupIngredients.create);
+router.post('/new-group', adminResponse401, controllerGroupIngredients.create);
 router.get('/groups', controllerGroupIngredients.listGroups);
 // router.delete('/delete-all-users', controllerUser.deleteAllUsers);
 
-router.post('/new-ingredient', controllerIngredient.create);
+router.post('/new-ingredient', adminResponse401, controllerIngredient.create);
 router.get('/ingredients', controllerIngredient.listIngredients);
-router.delete('/delete-ingredient/:id', controllerIngredient.delete);
-router.put('/associate', controllerIngredient.updateAssociate)
+router.delete('/delete-ingredient/:id', adminResponse401, controllerIngredient.delete);
+router.put('/associate',adminResponse401, controllerIngredient.updateAssociate)
 
 
 
@@ -38,7 +38,7 @@ router.put('/associate', controllerIngredient.updateAssociate)
 // pega, posta, altera e deleta
 router.post('/teste', examples.teste);
 router.post('/teste/body', examples.testeWithParams);
-router.post('/teste/auth', patterResponse401, examples.testeAuth);
+router.post('/teste/auth', userResponse401, examples.testeAuth);
 
 
 

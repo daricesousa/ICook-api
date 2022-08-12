@@ -1,4 +1,4 @@
-# ICook
+# Busque receitas
 
 #### instale todas as dependencias
 ``` javascript
@@ -32,6 +32,12 @@ Ex.: preciso criar uma tabela de usuários, então executo o comando acima com o
 <p>
 Depois de criar uma migration, execute o comando para rodar/executar ela, para que as alterações sejam aplicadas no seu banco de dados
 </p>
+
+#### rodar o docker-compose.yml
+``` javascript
+docker-compose up -d
+```
+
 
 #### rodar a API
 ``` javascript
