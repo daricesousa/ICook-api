@@ -2,6 +2,7 @@ import { json, Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { Params } from "../utils/params";
 import { Ingredient } from "../models/ingredient";
+import { GroupIngredients } from "../models/modelGroupIngredients";
 
 
 class ControllerIngredient {
@@ -14,6 +15,15 @@ class ControllerIngredient {
 
       const { name, id, group, associates } = req.body;
       const repository = getRepository(Ingredient);
+      const groupRepository = getRepository(GroupIngredients);
+
+      const groupField = await groupRepository.findOne({ id: group });
+      if (!groupField) {
+        return res.status(403).json({
+          message: "Grupo não encontrado",
+        });
+      }
+
       const ingredient = repository.create({
         name,
         id,
