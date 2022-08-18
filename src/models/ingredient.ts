@@ -14,6 +14,9 @@ class Ingredient{
   @Column()
   associates: string;
 
+  @Column({default: false})
+  valid: boolean;
+
   @CreateDateColumn()
   readonly created_at: Date;
 }

@@ -19,6 +19,19 @@ function userResponse401 (req: MyReq, res: Response, next) {
   })(req, res, next);
 };
 
+function identifyUser (req: MyReq, res: Response, next) {
+  auth().authenticate(async (error, user, _) => {
+    if (!error && user) {
+      const repository = getRepository(User)
+      const findUser = await repository.findOne({id: user.id})
+      req.user = findUser;
+    }
+    
+    return next();
+  })(req, res, next);
+};
+
+
 function adminResponse401 (req: MyReq, res: Response, next) {
   auth().authenticate(async (error, user, _) => {
     if (error || !user) {
@@ -39,4 +52,4 @@ function adminResponse401 (req: MyReq, res: Response, next) {
   })(req, res, next);
 };
 
-export { userResponse401, adminResponse401 }
+export { userResponse401, adminResponse401, identifyUser }

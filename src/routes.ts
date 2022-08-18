@@ -1,8 +1,9 @@
 import { auth } from './utils/auth';
 import { Router, Response } from 'express'
 import { ControllerUser } from './controllers/controllerUser';
+import { ControllerRecipe } from './controllers/controllerRecipe';
 import { Examples } from './controllers/controllerExamples';
-import { userResponse401, adminResponse401 } from './utils/response401';
+import { userResponse401, adminResponse401, identifyUser } from './utils/response401';
 import { ControllerGroupIngredients } from './controllers/controllerGroupIngredients';
 import { ControllerIngredient } from './controllers/controllerIngredient';
 
@@ -12,6 +13,7 @@ const controllerUser = new ControllerUser();
 const controllerGroupIngredients = new ControllerGroupIngredients();
 const examples = new Examples();
 const controllerIngredient = new ControllerIngredient();
+const controllerRecipe = new ControllerRecipe();
 
 
 router.get('/', (req, res) => {
@@ -26,13 +28,16 @@ router.post('/new-group', adminResponse401, controllerGroupIngredients.create);
 router.get('/groups', controllerGroupIngredients.listGroups);
 // router.delete('/delete-all-users', controllerUser.deleteAllUsers);
 
-router.post('/new-ingredient', adminResponse401, controllerIngredient.create);
-router.get('/ingredients', controllerIngredient.listIngredients);
+router.post('/new-ingredient', userResponse401, controllerIngredient.create);
+router.get('/ingredients',identifyUser , controllerIngredient.listIngredients);
 router.delete('/delete-ingredient/:id', adminResponse401, controllerIngredient.delete);
 router.put('/associate',adminResponse401, controllerIngredient.updateAssociate)
 
+router.post('/recipe/create', userResponse401, controllerRecipe.create);
+router.get('/recipes', identifyUser, controllerRecipe.listRecipes);
 
-
+router.put('/validate/ingredient', adminResponse401, controllerIngredient.validateIngredient);
+router.put('/validate/recipe', adminResponse401, controllerRecipe.validateRecipe);
 // exemplos de rotas
 // get, post, put e delete
 // pega, posta, altera e deleta
