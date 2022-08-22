@@ -73,29 +73,29 @@ class ControllerUser {
       const { email, password } = req.body;      
       if (!email || !password) {
         return res.status(433).json({
-          message: "email e password são campos obrigatorios",
+          message: "email e password são campos obrigatórios",
         });
       } else if (!EmailValidator.validate(email)) {
         return res.status(403).json({
-          message: "email invalido",
+          message: "email inválido",
         });
-      } else if (password.length < 8) {
+      } else if (password.length < 5) {
         return res.status(403).json({
-          message: "password deve ter no minimo 8 caracteres",
+          message: "password deve ter no minimo 5 caracteres",
         });
       }
 
       const userRepository = getRepository(User);
-      const userAlreadyExists = await userRepository.findOne({ email });
+      const userExist = await userRepository.findOne({ email });
 
-      if (!userAlreadyExists || "") {
+      if (!userExist || "") {
         return res.status(404).json({
           message: "usuario não encontrado",
         });
       }
       const authorization = await bcrypt.compare(
         password,
-        userAlreadyExists.password
+        userExist.password
       );
 
       if (authorization) {
@@ -103,22 +103,22 @@ class ControllerUser {
 
         const token = jwt.sign(
           {
-            id: userAlreadyExists.id,
+            id: userExist.id,
             date: date,
           },
           process.env.SECRET,
         );
-        if (!userAlreadyExists.valid_sign) {
-          await userRepository.update(userAlreadyExists.id, { valid_sign: date })
+        if (!userExist.valid_sign) {
+          await userRepository.update(userExist.id, { valid_sign: date })
         }
         return res.json({
           message: "login efetuado",
-          user: userAlreadyExists.name,
+          user: userExist.name,
           token,
         });
       } else {
         return res.status(403).json({
-          message: "senha invalida",
+          message: "senha inválida",
         });
       }
 

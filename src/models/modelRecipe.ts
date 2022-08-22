@@ -36,7 +36,8 @@ class Recipe {
 
 interface IIngredient {
   id: number;
-  quantity: string;
+  quantity: number;
+  measurer: string;
 }
 
 interface IAvaliation {

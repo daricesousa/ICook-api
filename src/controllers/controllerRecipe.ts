@@ -18,7 +18,7 @@ class ControllerRecipe {
 
             let message = ""
             for await (let e of ingredients.list) {
-                if (!e.id || !e.quantity) {
+                if (!e.id || !e.quantity || !e.measurer) {
                     message = "Lista de ingredientes invalida"
                     break
                 }
