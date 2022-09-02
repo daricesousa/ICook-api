@@ -9,29 +9,30 @@ class Recipe {
   title: string;
 
   @Column("simple-json")
-  ingredients: {list: IIngredient[]};
+  ingredients: { list: IIngredient[] };
   //lista de map com o id do ingrediente e a quantidadade
 
-  @Column()
-  method: string; //modo de preparo
+  @Column("simple-array", {default:[]})
+  method: string[]; //modo de preparo
 
-  @Column()
-  picture: string; //foto
-
-  @Column({default: "médio"})
+  @Column({ default: "médio" })
   difficulty: string;
 
   @Column()
   creator: number; //id do usuário que criou
 
-  @Column({default: false})
+  @Column({ default: false })
   valid: boolean;
 
   @Column("simple-json")
-  avaliations: {list: IAvaliation[]}; //lista de map dos usuários que avaliaram e sua nota
+  avaliations: { list: IAvaliation[] }; //lista de map dos usuários que avaliaram e sua nota
+
 
   @CreateDateColumn()
   readonly created_at: Date;
+
+  @Column()
+  picture: string; //foto
 }
 
 interface IIngredient {

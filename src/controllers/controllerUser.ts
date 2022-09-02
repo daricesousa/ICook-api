@@ -5,6 +5,7 @@ import * as bcrypt from "bcryptjs";
 import * as EmailValidator from "email-validator";
 import jwt from 'jsonwebtoken';
 import { Params } from "../utils/params";
+import { MyReq } from "../interfaces/myReq";
 
 class ControllerUser {
   async listUsers (req: Request, res: Response) {
@@ -68,6 +69,7 @@ class ControllerUser {
     }
   }
 
+
   async sign(req: Request, res: Response) {
     try {
       const { email, password } = req.body;      
@@ -103,7 +105,8 @@ class ControllerUser {
 
         const token = jwt.sign(
           {
-            id: userExist.id,
+            ...userExist,
+            password: undefined,
             date: date,
           },
           process.env.SECRET,
@@ -113,7 +116,8 @@ class ControllerUser {
         }
         return res.json({
           message: "login efetuado",
-          user: userExist.name,
+          ...userExist,
+          password: undefined,
           token,
         });
       } else {
@@ -130,6 +134,7 @@ class ControllerUser {
       });
     }
   }
+
 }
 
 export { ControllerUser };

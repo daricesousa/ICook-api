@@ -38,7 +38,7 @@ class ControllerRecipe {
                 method: method,
                 difficulty: difficulty,
                 creator: req.user.id,
-                avaliations: { "list": [] },
+                avaliations:  {"list": []},
                 valid: req.user.rule == 'admin',
             });
 
@@ -81,7 +81,6 @@ class ControllerRecipe {
         }
     }
 
-
     async validateRecipe(req: Request, res: Response) {
         try {
             const fields = Params.required(req.body, ['id', 'accept']);
@@ -110,6 +109,39 @@ class ControllerRecipe {
         }
     }
 
+
+
+async newAvaliation(req: Request, res: Response) {
+    try {
+      const fields = Params.required(req.body, ['recipe', 'user', 'rating']);
+      if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
+
+      const { recipe, user, rating } = req.body;
+      const repository = getRepository(Recipe);
+      let recipeFind = await repository.findOne({id: recipe});
+
+      if (!recipeFind) {
+        return res.status(403).json({
+          message: "Receita não encontrada",
+        });
+      }
+      recipeFind.avaliations.list.push({
+        user: user,
+        rating: rating
+      })
+      await repository.update({ id: recipeFind.id }, recipeFind)
+      return res.json({
+        "message": "Avaliação realizada"
+      })
+
+    }
+    catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "erro interno",
+      });
+    }
+  }
 }
 
 export { ControllerRecipe };

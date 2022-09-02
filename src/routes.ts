@@ -34,6 +34,7 @@ router.delete('/delete-ingredient/:id', adminResponse401, controllerIngredient.d
 router.put('/associate',adminResponse401, controllerIngredient.updateAssociate)
 
 router.post('/recipe/create', userResponse401, controllerRecipe.create);
+router.put('/recipe/new-avaliation', userResponse401, controllerRecipe.newAvaliation);
 router.get('/recipes', identifyUser, controllerRecipe.listRecipes);
 
 router.put('/validate/ingredient', adminResponse401, controllerIngredient.validateIngredient);
