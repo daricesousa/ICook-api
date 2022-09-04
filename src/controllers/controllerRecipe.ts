@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { MyReq } from "../interfaces/myReq";
 import { Ingredient } from "../models/ingredient";
-import { Recipe, IIngredient } from "../models/modelRecipe";
+import { Recipe, IIngredient, IAvaliation } from "../models/modelRecipe";
 import { Params } from "../utils/params";
 
 class ControllerRecipe {
@@ -38,7 +38,7 @@ class ControllerRecipe {
                 method: method,
                 difficulty: difficulty,
                 creator: req.user.id,
-                avaliations:  {"list": []},
+                avaliations: { "list": [] },
                 valid: req.user.rule == 'admin',
             });
 
@@ -111,37 +111,46 @@ class ControllerRecipe {
 
 
 
-async newAvaliation(req: Request, res: Response) {
-    try {
-      const fields = Params.required(req.body, ['recipe', 'user', 'rating']);
-      if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
+    async newAvaliation(req: MyReq, res: Response) {
+        try {
+            const fields = Params.required(req.body, ['recipe', 'rating']);
+            if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
 
-      const { recipe, user, rating } = req.body;
-      const repository = getRepository(Recipe);
-      let recipeFind = await repository.findOne({id: recipe});
+            const { recipe, rating } = req.body;
+            const repository = getRepository(Recipe);
+            const recipeFind = await repository.findOne({ id: recipe });
 
-      if (!recipeFind) {
-        return res.status(403).json({
-          message: "Receita não encontrada",
-        });
-      }
-      recipeFind.avaliations.list.push({
-        user: user,
-        rating: rating
-      })
-      await repository.update({ id: recipeFind.id }, recipeFind)
-      return res.json({
-        "message": "Avaliação realizada"
-      })
+            if (!recipeFind) {
+                return res.status(403).json({
+                    message: "Receita não encontrada",
+                });
+            }
 
+            const index = (recipeFind.avaliations.list as IAvaliation[]).findIndex((e) => e.user == req.user.id)
+
+            if (index != -1) {
+                recipeFind.avaliations.list[index].rating = rating;
+            }
+            else {
+                recipeFind.avaliations.list.push({
+                    user: req.user.id,
+                    rating: rating
+                })
+            }
+
+            await repository.update({ id: recipeFind.id }, recipeFind)
+            return res.json({
+                "message": "Avaliação realizada"
+            })
+
+        }
+        catch (error) {
+            console.log(error);
+            return res.status(500).json({
+                message: "erro interno",
+            });
+        }
     }
-    catch (error) {
-      console.log(error);
-      return res.status(500).json({
-        message: "erro interno",
-      });
-    }
-  }
 }
 
 export { ControllerRecipe };

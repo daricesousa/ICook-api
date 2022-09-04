@@ -15,8 +15,8 @@ class Recipe {
   @Column("simple-array", {default:[]})
   method: string[]; //modo de preparo
 
-  @Column({ default: "médio" })
-  difficulty: string;
+  @Column({ default: 2 })
+  difficulty: number;
 
   @Column()
   creator: number; //id do usuário que criou
