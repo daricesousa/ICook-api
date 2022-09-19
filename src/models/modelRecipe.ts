@@ -33,6 +33,25 @@ class Recipe {
 
   @Column()
   picture: string; //foto
+
+  public avaliated(userId: Number): number {
+    let userAvaliated = -1;
+    this.avaliations.list.forEach((e) => {
+      if (e.user === userId) {
+        userAvaliated = e.rating
+        return
+      }
+    })
+    return userAvaliated;
+  }
+
+  public sumAvaliations(): number {
+    let sum = 0;
+    this.avaliations.list.forEach((e) => {
+      sum+= e.rating;
+    })
+    return sum;
+  }
 }
 
 interface IIngredient {

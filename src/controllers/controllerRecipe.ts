@@ -68,10 +68,23 @@ class ControllerRecipe {
 
             const [recipes] = await repository.findAndCount(filter);
 
+
             res.json({
                 message: 'sucesso',
                 data: {
-                    recipes: recipes
+                    recipes: recipes.map((recipe) => {
+                        const userRating = recipe.avaliated(req.user.id)
+                        return {
+                            ...recipe,
+                            avaliations: undefined,
+                            avaliation: {
+                                user_rating: userRating,
+                                quantity: recipe.avaliations.list.length,
+                                rating_average: recipe.sumAvaliations()/recipe.avaliations.list.length,
+                            }
+
+                        }
+                    }),
                 }
             })
         } catch (error) {
