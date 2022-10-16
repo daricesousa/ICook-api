@@ -3,7 +3,9 @@ import { getRepository } from "typeorm";
 import { MyReq } from "../interfaces/myReq";
 import { Ingredient } from "../models/ingredient";
 import { Recipe, IIngredient, IAvaliation } from "../models/modelRecipe";
+import { User } from "../models/modelUser";
 import { Params } from "../utils/params";
+import { identifyUser } from "../utils/response401";
 
 class ControllerRecipe {
     async create(req: MyReq, res: Response) {
@@ -57,7 +59,8 @@ class ControllerRecipe {
     async listRecipes(req: MyReq, res: Response) {
 
         try {
-            const repository = getRepository(Recipe);
+
+            const repositoryRecipe = getRepository(Recipe);
             const show = req.query.show
             let filter = { valid: true }
 
@@ -65,15 +68,23 @@ class ControllerRecipe {
                 if (show == 'invalid') filter.valid = false
                 if (show == 'all') filter = {} as any
             }
-
-            const [recipes] = await repository.findAndCount(filter);
-
-
+            const repositoryUser = getRepository(User);
+            const [recipes] = await repositoryRecipe.findAndCount(filter);
+            const [users] = await repositoryUser.findAndCount();
             res.json({
                 message: 'sucesso',
                 data: {
                     recipes: recipes.map((recipe) => {
-                        const userRating = recipe.avaliated(req.user.id)
+                        let userRating = -1
+                        if (req?.user?.id) {
+                            userRating = recipe.avaliated(req?.user?.id)
+                        }
+                        const user =  users.find((user) => user.id == recipe.creator);
+                        let nameCreator = ''
+                        if(user){
+                            nameCreator = user.name
+                        }
+
                         return {
                             ...recipe,
                             avaliations: undefined,
@@ -81,8 +92,8 @@ class ControllerRecipe {
                                 user_rating: userRating,
                                 quantity: recipe.avaliations.list.length,
                                 rating_average: recipe.sumAvaliations()/recipe.avaliations.list.length,
-                            }
-
+                            },
+                            name_creator: nameCreator,
                         }
                     }),
                 }

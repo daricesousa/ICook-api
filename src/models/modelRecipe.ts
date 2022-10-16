@@ -10,7 +10,7 @@ class Recipe {
 
   @Column("simple-json")
   ingredients: { list: IIngredient[] };
-  //lista de map com o id do ingrediente e a quantidadade
+  //lista de map com o id do ingrediente e a quantidade
 
   @Column("simple-array", {default:[]})
   method: string[]; //modo de preparo

@@ -30,8 +30,9 @@ router.get('/groups', controllerGroupIngredients.listGroups);
 
 router.post('/new-ingredient', userResponse401, controllerIngredient.create);
 router.get('/ingredients',identifyUser , controllerIngredient.listIngredients);
-router.delete('/delete-ingredient/:id', adminResponse401, controllerIngredient.delete);
-router.put('/associate',adminResponse401, controllerIngredient.updateAssociate)
+router.delete('ingredient/delete/:id', adminResponse401, controllerIngredient.delete);
+router.put('ingredient/associate',adminResponse401, controllerIngredient.updateAssociate)
+router.put('/ingredient/update',adminResponse401, controllerIngredient.update)
 
 router.post('/recipe/create', userResponse401, controllerRecipe.create);
 router.put('/recipe/new-avaliation', userResponse401, controllerRecipe.newAvaliation);

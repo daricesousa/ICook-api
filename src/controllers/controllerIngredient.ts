@@ -123,6 +123,47 @@ class ControllerIngredient {
     }
   }
 
+  async update(req: Request, res: Response) {
+    try {
+      const fields = Params.required(req.body, ['id']);
+      if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
+
+      const { id, name, group } = req.body;
+      const repository = getRepository(Ingredient);
+      let ingredient = await repository.findOne({ id });
+
+      if (!ingredient) {
+        return res.status(403).json({
+          message: "Ingrediente não cadastrado",
+        });
+      }
+      if(!name){
+        ingredient.name = name
+      }
+      if(!group){
+        const groupRepository = getRepository(GroupIngredients);
+        const groupField = await groupRepository.findOne({ id: group });
+        if (!groupField) {
+          return res.status(403).json({
+            message: "Grupo não encontrado",
+          });
+        }
+        ingredient.group = group
+      }
+      await repository.update({ id: id }, ingredient)
+      return res.json({
+        "message": "ingrediente alterado"
+      })
+
+    }
+    catch (error) {
+      console.log(error);
+      return res.status(500).json({
+        message: "erro interno",
+      });
+    }
+  }
+
   async validateIngredient(req: Request, res: Response) {
     try {
       const fields = Params.required(req.body, ['id', 'accept']);

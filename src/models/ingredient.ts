@@ -10,7 +10,7 @@ class Ingredient{
 
   @Column()
   group: number;
-
+  
   @Column()
   associates: string;
 
