@@ -33,10 +33,14 @@ class ControllerGroupIngredients {
     try{
       const repository = getRepository(GroupIngredients);
       const groups = await repository.find();
+      const groupsSort = groups.sort(function (a: GroupIngredients, b: GroupIngredients){
+        if(a.name > b.name) return 1;
+        else return -1;
+      })
       res.json({
         message: 'sucesso',
         data: {
-          groups: groups.map((group) => {
+          groups: groupsSort.map((group) => {
             return {
               ...group,
               created_at: undefined

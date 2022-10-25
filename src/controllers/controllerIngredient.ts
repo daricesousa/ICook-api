@@ -56,11 +56,16 @@ class ControllerIngredient {
         if (show == 'all') filter = {} as any
       }
 
-      const [ingredients] = await repository.findAndCount(filter);
+      const  [ingredients] = await repository.findAndCount(filter);
+      const ingredientsSort = ingredients.sort(function (a: Ingredient, b: Ingredient) {
+        if (a.name > b.name) return 1;
+        else return -1;
+       });
+
       res.json({
         message: 'sucesso',
         data: {
-          ingredients: ingredients.map((ingredient) => {
+          ingredients: ingredientsSort.map((ingredient) => {
             return {
               ...ingredient,
               associates: JSON.parse(ingredient.associates)
@@ -137,10 +142,10 @@ class ControllerIngredient {
           message: "Ingrediente não cadastrado",
         });
       }
-      if(!name){
+      if (!name) {
         ingredient.name = name
       }
-      if(!group){
+      if (!group) {
         const groupRepository = getRepository(GroupIngredients);
         const groupField = await groupRepository.findOne({ id: group });
         if (!groupField) {
@@ -175,19 +180,19 @@ class ControllerIngredient {
       if (!ingredient) {
         return res.status(404).json({ message: "Ingrediente não encontrado" });
       }
-      if(accept == true){
-        await repository.update({id}, {valid: true})
-        return res.status(201).json({message: "Ingrediente cadastrado"});
+      if (accept == true) {
+        await repository.update({ id }, { valid: true })
+        return res.status(201).json({ message: "Ingrediente cadastrado" });
       }
-      if(accept == false){
-        await repository.delete({id: Number(id)})
-        return res.status(200).json({message: "Ingrediente excluído"});
+      if (accept == false) {
+        await repository.delete({ id: Number(id) })
+        return res.status(200).json({ message: "Ingrediente excluído" });
       }
-      return res.status(433).json({message: "Accept inválido"});
+      return res.status(433).json({ message: "Accept inválido" });
 
-    }catch(e){
+    } catch (e) {
       console.log(e)
-      return res.status(500).json({message: "Erro interno"});
+      return res.status(500).json({ message: "Erro interno" });
 
     }
   }
