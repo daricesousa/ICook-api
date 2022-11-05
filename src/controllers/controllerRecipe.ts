@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { getRepository } from "typeorm";
 import { MyReq } from "../interfaces/myReq";
 import { Ingredient } from "../models/ingredient";
@@ -6,48 +6,93 @@ import { Recipe, IIngredient, IAvaliation } from "../models/modelRecipe";
 import { User } from "../models/modelUser";
 import { Params } from "../utils/params";
 import { identifyUser } from "../utils/response401";
+import admin from "firebase-admin";
 
 class ControllerRecipe {
     async create(req: MyReq, res: Response) {
         try {
-            const fields = Params.required(req.body, ['title', 'ingredients', 'method', 'picture']);
-            if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
+            console.log("criando");
+            const user_id = req.user.id
+            const repositoryUser = getRepository(User);
+            console.log(user_id);
+            const userExist = await repositoryUser.findOne(user_id);
+            if (userExist) {
+                const formidable = require('formidable');
+                const form = new formidable.IncomingForm();
+                form.parse(req, async (err, fields, files) => {
+                    console.log(fields);
+                    var ingredients = JSON.parse(fields.ingredients);
+                    console.log(ingredients);
+                    const title = fields.title;
+                    const method = JSON.parse(fields.method).list;
+                    const difficulty = fields.difficulty;
+                    var picture = '';
 
-            const { title, ingredients, method, picture, difficulty } = req.body;
-
-            const recipeRepository = getRepository(Recipe);
-            const ingredientRepository = getRepository(Ingredient);
-
-            let message = ""
-            for await (let e of ingredients.list) {
-                if (!e.id || !e.quantity || !e.measurer) {
-                    message = "Lista de ingredientes invalida"
-                    break
-                }
-                if (e.id) {
-                    const existIngredient = await ingredientRepository.findOne({ id: e.id })
-                    if (!existIngredient) {
-                        message = `Ingrediente com id ${e.id} não existe`
-                        break
+                    console.log(method);
+                    if (!files.picture) {
+                        return res.status(430).json({
+                            message: "Erro ao carregar imagem",
+                        });
                     }
-                }
-            }
-            if (message) return res.status(433).json({ message })
-            const recipe = recipeRepository.create({
-                title: title,
-                picture: picture,
-                ingredients: ingredients,
-                method: method,
-                difficulty: difficulty,
-                creator: req.user.id,
-                avaliations: { "list": [] },
-                valid: req.user.rule == 'admin',
-            });
+                    const bucket = admin.storage().bucket(process.env.BUCKET_NAME);
+                    const name = `${new Date().getTime()}${files.picture.name}.png`
+                    const response = await bucket.upload(files.picture.path, { destination: name, public: true, private: false });
+                    picture = response[0].publicUrl();
 
-            await recipeRepository.save(recipe);
-            return res.json({
-                message: "receita criada",
-            });
+                    console.log(fields)
+                    console.log(ingredients.list);
+
+                    for (var i = 0; i < ingredients.list.length; i += 1) {
+                        ingredients.list[i] = JSON.stringify(ingredients.list[i]);
+                        ingredients.list[i] = JSON.parse(ingredients.list[i]);
+                    }
+                    console.log(ingredients.list)
+                    console.log(ingredients.list[0].id)
+
+
+
+
+                    const ingredientRepository = getRepository(Ingredient);
+                    let message = ""
+                    for await (let i of ingredients.list) {
+                        if (!i.id || !i.quantity || !i.measurer) {
+                            message = "Lista de ingredientes invalida"
+                            break
+                        }
+                        if (i.id) {
+                            const existIngredient = await ingredientRepository.findOne({ id: i.id })
+                            if (!existIngredient) {
+                                message = `Ingrediente com id ${i.id} não existe`
+                                break
+                            }
+                        }
+                    }
+                    if (message) return res.status(433).json({ message })
+
+                    const recipeRepository = getRepository(Recipe);
+                    const recipe = recipeRepository.create({
+                        title: title,
+                        picture: picture,
+                        ingredients: ingredients,
+                        method: method,
+                        difficulty: difficulty,
+                        creator: req.user.id,
+                        avaliations: { "list": [] },
+                        valid: req.user.rule == 'admin',
+                    });
+                    await recipeRepository.save(recipe);
+                    return res.json({
+                        message: "Receita criada. Aguarde a avaliação dos administradores",
+                    });
+
+                });
+            }
+            else {
+                return res.status(430).json({
+                    message: "Usuário não tem acesso",
+                });
+            }
+
         } catch (error) {
             console.log(error);
             return res.status(500).json({
@@ -79,9 +124,9 @@ class ControllerRecipe {
                         if (req?.user?.id) {
                             userRating = recipe.avaliated(req?.user?.id)
                         }
-                        const user =  users.find((user) => user.id == recipe.creator);
+                        const user = users.find((user) => user.id == recipe.creator);
                         let nameCreator = ''
-                        if(user){
+                        if (user) {
                             nameCreator = user.name
                         }
 
@@ -91,7 +136,7 @@ class ControllerRecipe {
                             avaliation: {
                                 user_rating: userRating,
                                 quantity: recipe.avaliations.list.length,
-                                rating_average: recipe.sumAvaliations()/recipe.avaliations.list.length,
+                                rating_average: recipe.sumAvaliations() / recipe.avaliations.list.length,
                             },
                             name_creator: nameCreator,
                         }
@@ -101,7 +146,6 @@ class ControllerRecipe {
         } catch (error) {
             console.log(error);
             return res.status(500).json({ message: "Erro no servidor" })
-
         }
     }
 
