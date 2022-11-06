@@ -26,6 +26,7 @@ class ControllerRecipe {
                     const title = fields.title;
                     const method = JSON.parse(fields.method).list;
                     const difficulty = fields.difficulty;
+                    const pictureIlustration = Boolean(fields.picture_ilustration);
                     var picture = '';
 
                     console.log(method);
@@ -46,12 +47,7 @@ class ControllerRecipe {
                         ingredients.list[i] = JSON.stringify(ingredients.list[i]);
                         ingredients.list[i] = JSON.parse(ingredients.list[i]);
                     }
-                    console.log(ingredients.list)
-                    console.log(ingredients.list[0].id)
-
-
-
-
+                    
                     const ingredientRepository = getRepository(Ingredient);
                     let message = ""
                     for await (let i of ingredients.list) {
@@ -69,17 +65,23 @@ class ControllerRecipe {
                     }
                     if (message) return res.status(433).json({ message })
 
-                    const recipeRepository = getRepository(Recipe);
-                    const recipe = recipeRepository.create({
+                    console.log(pictureIlustration);
+
+                    const obj = {
                         title: title,
                         picture: picture,
+                        picture_ilustration: pictureIlustration,
                         ingredients: ingredients,
                         method: method,
                         difficulty: difficulty,
                         creator: req.user.id,
                         avaliations: { "list": [] },
                         valid: req.user.rule == 'admin',
-                    });
+                    }
+                    console.log(obj);
+
+                    const recipeRepository = getRepository(Recipe);
+                    const recipe = recipeRepository.create(obj);
                     await recipeRepository.save(recipe);
                     return res.json({
                         message: "Receita criada. Aguarde a avaliação dos administradores",
@@ -132,13 +134,13 @@ class ControllerRecipe {
 
                         return {
                             ...recipe,
+                            name_creator: nameCreator,
                             avaliations: undefined,
                             avaliation: {
                                 user_rating: userRating,
                                 quantity: recipe.avaliations.list.length,
                                 rating_average: recipe.sumAvaliations() / recipe.avaliations.list.length,
                             },
-                            name_creator: nameCreator,
                         }
                     }),
                 }

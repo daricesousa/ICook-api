@@ -34,6 +34,9 @@ class Recipe {
   @Column()
   picture: string; //foto
 
+  @Column({ default: false })
+  picture_ilustration: boolean;
+
   public avaliated(userId: Number): number {
     let userAvaliated = -1;
     this.avaliations.list.forEach((e) => {
