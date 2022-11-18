@@ -20,16 +20,15 @@ class ControllerRecipe {
                 const formidable = require('formidable');
                 const form = new formidable.IncomingForm();
                 form.parse(req, async (err, fields, files) => {
+                    const title = fields.title;
                     console.log(fields);
                     var ingredients = JSON.parse(fields.ingredients);
-                    console.log(ingredients);
-                    const title = fields.title;
                     const method = JSON.parse(fields.method).list;
                     const difficulty = fields.difficulty;
+                    const timeSetup = fields.time_setup;
+                    const timeCooking = fields.time_cooking;
                     const pictureIlustration = Boolean(fields.picture_ilustration);
                     var picture = '';
-
-                    console.log(method);
                     if (!files.picture) {
                         return res.status(430).json({
                             message: "Erro ao carregar imagem",
@@ -40,8 +39,7 @@ class ControllerRecipe {
                     const response = await bucket.upload(files.picture.path, { destination: name, public: true, private: false });
                     picture = response[0].publicUrl();
 
-                    console.log(fields)
-                    console.log(ingredients.list);
+                    console.log(fields);
 
                     for (var i = 0; i < ingredients.list.length; i += 1) {
                         ingredients.list[i] = JSON.stringify(ingredients.list[i]);
@@ -65,23 +63,20 @@ class ControllerRecipe {
                     }
                     if (message) return res.status(433).json({ message })
 
-                    console.log(pictureIlustration);
-
-                    const obj = {
+                    const recipeRepository = getRepository(Recipe);
+                    const recipe = recipeRepository.create({
                         title: title,
                         picture: picture,
                         picture_ilustration: pictureIlustration,
                         ingredients: ingredients,
+                        time_setup: timeSetup,
+                        time_cooking: timeCooking,
                         method: method,
                         difficulty: difficulty,
                         creator: req.user.id,
                         avaliations: { "list": [] },
                         valid: req.user.rule == 'admin',
-                    }
-                    console.log(obj);
-
-                    const recipeRepository = getRepository(Recipe);
-                    const recipe = recipeRepository.create(obj);
+                    });
                     await recipeRepository.save(recipe);
                     return res.json({
                         message: "Receita criada. Aguarde a avaliação dos administradores",
