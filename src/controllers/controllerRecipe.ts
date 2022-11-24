@@ -36,7 +36,7 @@ class ControllerRecipe {
                     }
                     const bucket = admin.storage().bucket(process.env.BUCKET_NAME);
                     const name = `${new Date().getTime()}${files.picture.name}.png`
-                    const response = await bucket.upload(files.picture.path, { destination: name, public: true, private: false });
+                    const response = await bucket.upload(files.picture.path, { destination: name, public: true, private: false});
                     picture = response[0].publicUrl();
 
                     console.log(fields);
@@ -45,7 +45,7 @@ class ControllerRecipe {
                         ingredients.list[i] = JSON.stringify(ingredients.list[i]);
                         ingredients.list[i] = JSON.parse(ingredients.list[i]);
                     }
-                    
+
                     const ingredientRepository = getRepository(Ingredient);
                     let message = ""
                     for await (let i of ingredients.list) {

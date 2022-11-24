@@ -14,7 +14,7 @@ class ControllerIngredient {
       const fields = Params.required(req.body, ['name', 'group']);
       if (fields) return res.status(433).json({ message: "Campos inválidos", campos: fields })
 
-      const { name, id, group, associates } = req.body;
+      const { name, group, associates } = req.body;
       const repository = getRepository(Ingredient);
       const groupRepository = getRepository(GroupIngredients);
 
@@ -27,15 +27,18 @@ class ControllerIngredient {
 
       const ingredient = repository.create({
         name,
-        id,
         group,
         associates: JSON.stringify(associates || []),
         valid: req.user.rule == 'admin',
       });
 
-      await repository.save(ingredient);
+      const ingredientSaved = await repository.save(ingredient);
       return res.json({
         message: "ingrediente criado",
+        data: {
+          ...ingredientSaved,
+          associates: JSON.parse(ingredient.associates)
+        }
       });
     } catch (error) {
       console.log(error);
@@ -56,11 +59,11 @@ class ControllerIngredient {
         if (show == 'all') filter = {} as any
       }
 
-      const  [ingredients] = await repository.findAndCount(filter);
+      const [ingredients] = await repository.findAndCount(filter);
       const ingredientsSort = ingredients.sort(function (a: Ingredient, b: Ingredient) {
         if (a.name > b.name) return 1;
         else return -1;
-       });
+      });
 
       res.json({
         message: 'sucesso',
