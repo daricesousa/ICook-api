@@ -18,11 +18,11 @@ class Recipe {
   @Column({ default: 1 })
   difficulty: number;
 
-  @Column({ default: '11-30 min'})
-  time_setup: string
+  @Column({default: 10})
+  time_setup: number
 
-  @Column({ default: '11-30 min'})
-  time_cooking: string
+  @Column({default: 10})
+  time_cooking: number
 
   @Column()
   creator: number; //id do usuário que criou
