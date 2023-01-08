@@ -56,7 +56,6 @@ class ControllerUser {
         name: name,
         email: email,
         password: hashP,
-        rule: "admin"
       });
       await userRepository.save(user);
       return res.json({
