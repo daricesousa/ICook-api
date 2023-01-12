@@ -34,7 +34,7 @@ class ControllerGroupIngredients {
       const repository = getRepository(GroupIngredients);
       const groups = await repository.find();
       const groupsSort = groups.sort(function (a: GroupIngredients, b: GroupIngredients){
-        if(a.name > b.name) return 1;
+        if(a.name.toLowerCase() > b.name.toLowerCase()) return 1;
         else return -1;
       })
       res.json({

@@ -29,7 +29,8 @@ class ControllerIngredient {
         name,
         group,
         associates: JSON.stringify(associates || []),
-        valid: req.user.rule == 'admin',
+        valid: false,
+        // valid: req.user.rule == 'admin',
       });
 
       const ingredientSaved = await repository.save(ingredient);
@@ -61,9 +62,11 @@ class ControllerIngredient {
 
       const [ingredients] = await repository.findAndCount(filter);
       const ingredientsSort = ingredients.sort(function (a: Ingredient, b: Ingredient) {
-        if (a.name > b.name) return 1;
+        if (a.name.toLowerCase() > b.name.toLowerCase()) return 1;
         else return -1;
       });
+
+      // toLowerCase()
 
       res.json({
         message: 'sucesso',

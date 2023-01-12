@@ -11,10 +11,8 @@ import admin from "firebase-admin";
 class ControllerRecipe {
     async create(req: MyReq, res: Response) {
         try {
-            console.log("criando");
             const user_id = req.user.id
             const repositoryUser = getRepository(User);
-            console.log(user_id);
             const userExist = await repositoryUser.findOne(user_id);
             if (userExist) {
                 const formidable = require('formidable');
@@ -27,7 +25,7 @@ class ControllerRecipe {
                     const difficulty = fields.difficulty;
                     const timeSetup = fields.time_setup;
                     const timeCooking = fields.time_cooking;
-                    const pictureIlustration = Boolean(fields.picture_ilustration);
+                    const pictureIlustration = fields.picture_ilustration === "true";
                     var picture = '';
                     if (!files.picture) {
                         return res.status(430).json({
@@ -62,7 +60,6 @@ class ControllerRecipe {
                         }
                     }
                     if (message) return res.status(433).json({ message })
-
                     const recipeRepository = getRepository(Recipe);
                     const recipe = recipeRepository.create({
                         title: title,
@@ -99,9 +96,7 @@ class ControllerRecipe {
     }
 
     async listRecipes(req: MyReq, res: Response) {
-
         try {
-
             const repositoryRecipe = getRepository(Recipe);
             const show = req.query.show
             let filter = { valid: true }
@@ -173,8 +168,6 @@ class ControllerRecipe {
 
         }
     }
-
-
 
     async newAvaliation(req: MyReq, res: Response) {
         try {
