@@ -29,8 +29,7 @@ class ControllerIngredient {
         name,
         group,
         associates: JSON.stringify(associates || []),
-        valid: false,
-        // valid: req.user.rule == 'admin',
+        valid: req.user.rule == 'admin',
       });
 
       const ingredientSaved = await repository.save(ingredient);
