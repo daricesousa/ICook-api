@@ -26,7 +26,7 @@ class ControllerIngredient {
       }
 
       const ingredient = repository.create({
-        name,
+        name: name.toLowerCase(),
         group,
         associates: JSON.stringify(associates || []),
         valid: req.user.rule == 'admin',

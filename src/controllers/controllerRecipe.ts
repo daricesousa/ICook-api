@@ -59,6 +59,7 @@ class ControllerRecipe {
                             }
                         }
                     }
+                    title[0].toUpperCase() + title.substring(1); 
                     if (message) return res.status(433).json({ message })
                     const recipeRepository = getRepository(Recipe);
                     const recipe = recipeRepository.create({
