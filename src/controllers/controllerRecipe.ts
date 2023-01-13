@@ -21,7 +21,7 @@ class ControllerRecipe {
                     const title = fields.title;
                     console.log(fields);
                     var ingredients = JSON.parse(fields.ingredients);
-                    const method = JSON.parse(fields.method).list;
+                    var method = JSON.parse(fields.method).list;
                     const difficulty = fields.difficulty;
                     const timeSetup = fields.time_setup;
                     const timeCooking = fields.time_cooking;
@@ -34,7 +34,7 @@ class ControllerRecipe {
                     }
                     const bucket = admin.storage().bucket(process.env.BUCKET_NAME);
                     const name = `${new Date().getTime()}${files.picture.name}.png`
-                    const response = await bucket.upload(files.picture.path, { destination: name, public: true, private: false});
+                    const response = await bucket.upload(files.picture.path, { destination: name, public: true, private: false });
                     picture = response[0].publicUrl();
 
                     console.log(fields);
@@ -59,7 +59,8 @@ class ControllerRecipe {
                             }
                         }
                     }
-                    title[0].toUpperCase() + title.substring(1); 
+                    title[0].toUpperCase() + title.substring(1);
+
                     if (message) return res.status(433).json({ message })
                     const recipeRepository = getRepository(Recipe);
                     const recipe = recipeRepository.create({
@@ -69,7 +70,7 @@ class ControllerRecipe {
                         ingredients: ingredients,
                         time_setup: timeSetup,
                         time_cooking: timeCooking,
-                        method: method,
+                        method: method.map((e) => e.replace(/\,/g, "<>")),
                         difficulty: difficulty,
                         creator: req.user.id,
                         avaliations: { "list": [] },
@@ -101,9 +102,10 @@ class ControllerRecipe {
             const repositoryRecipe = getRepository(Recipe);
             const show = req.query.show
             let filter = { valid: true }
-
             if (req.user && req.user.rule == 'admin') {
-                if (show == 'invalid') filter.valid = false
+                if (show == 'invalid') {
+                    filter.valid = false
+                }
                 if (show == 'all') filter = {} as any
             }
             const repositoryUser = getRepository(User);
