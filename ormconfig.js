@@ -13,10 +13,12 @@ const typeormConfig = {
   "password": process.env.PASSWORD,
   "host": process.env.HOST,
   "migrations": [
-    "/database/migrations/*.{js,ts}",
+    // "./src/database/migrations/*.{ts, js}",
+    `./${process.env.NODE_ENV === 'dev' ? 'src' :'dist'}/database/migrations/*.${process.env.NODE_ENV === 'dev' ? 'ts' :'js'}`,
   ],
   "entities": [
-    "/models/*.{js,ts}",
+    // "./src/models/*.{ts, js}",
+    `./${process.env.NODE_ENV === 'dev' ? 'src' :'dist'}/models/*.${process.env.NODE_ENV === 'dev' ? 'ts' :'js'}`,
   ],
   "cli": {
     "migrationsDir": "./src/database/migrations/"

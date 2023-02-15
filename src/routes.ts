@@ -6,6 +6,8 @@ import { Examples } from './controllers/controllerExamples';
 import { userResponse401, adminResponse401, identifyUser } from './utils/response401';
 import { ControllerGroupIngredients } from './controllers/controllerGroupIngredients';
 import { ControllerIngredient } from './controllers/controllerIngredient';
+import { getRepository } from 'typeorm';
+import { User } from './models/modelUser';
 
 const router = Router();
 
@@ -16,23 +18,27 @@ const controllerIngredient = new ControllerIngredient();
 const controllerRecipe = new ControllerRecipe();
 
 
-router.get('/', (req, res) => {
-    return res.json({ok: 'Server is running'});
+router.get('/', async (req, res) => {
+    return res.json({ ok: 'Server is running' });
+});
+
+router.get('/docs', async (req, res) => {
+    return res.json({ ok: 'Server is running' });
 });
 
 router.post('/sign', controllerUser.sign);
 router.post('/register', controllerUser.create);
-router.get('/users',adminResponse401 , controllerUser.listUsers);
+router.get('/users', controllerUser.listUsers);
 
 router.post('/new-group', adminResponse401, controllerGroupIngredients.create);
 router.get('/groups', controllerGroupIngredients.listGroups);
 // router.delete('/delete-all-users', controllerUser.deleteAllUsers);
 
 router.post('/new-ingredient', userResponse401, controllerIngredient.create);
-router.get('/ingredients',identifyUser , controllerIngredient.listIngredients);
+router.get('/ingredients', identifyUser, controllerIngredient.listIngredients);
 router.delete('/ingredient/delete/:id', adminResponse401, controllerIngredient.delete);
-router.put('/ingredient/associate',adminResponse401, controllerIngredient.updateAssociate)
-router.put('/ingredient/update',adminResponse401, controllerIngredient.update)
+router.put('/ingredient/associate', adminResponse401, controllerIngredient.updateAssociate)
+router.put('/ingredient/update', adminResponse401, controllerIngredient.update)
 
 router.post('/recipe/create', userResponse401, controllerRecipe.create);
 router.put('/recipe/new-avaliation', userResponse401, controllerRecipe.newAvaliation);
