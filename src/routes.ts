@@ -23,9 +23,6 @@ router.get('/', async (req, res) => {
     return res.json({ ok: `Server is running - port: ${port}` });
 });
 
-router.get('/docs', async (req, res) => {
-    return res.json({ ok: 'Server is running' });
-});
 
 router.post('/sign', controllerUser.sign);
 router.post('/register', controllerUser.create);
