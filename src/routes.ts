@@ -19,7 +19,8 @@ const controllerRecipe = new ControllerRecipe();
 
 
 router.get('/', async (req, res) => {
-    return res.json({ ok: 'Server is running' });
+    const port = process.env.PORT|| 3000
+    return res.json({ ok: `Server is running - port: ${port}` });
 });
 
 router.get('/docs', async (req, res) => {
